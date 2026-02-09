@@ -1,0 +1,16 @@
+# Gradle artifacts
+.gradle/
+build/
+
+# IDE Settings
+.idea/
+*.iml
+.vscode/
+.settings/
+.classpath
+.project
+bin/
+
+# Local configuration
+application-local.properties
+.DS_Store
