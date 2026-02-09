@@ -1,0 +1,46 @@
+services:
+  mariadb:
+    image: mariadb:11.4
+    container_name: mariadb
+    environment:
+      - MARIADB_USER=root
+      - MARIADB_ALLOW_EMPTY_ROOT_PASSWORD=yes
+    ports:
+      - "3306:3306"
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  fineract-server:
+    image: apache/fineract:latest
+    container_name: fineract-server
+    ports:
+      - "8443:8443"
+    environment:
+      - FINERACT_DEFAULT_TENANTDB_HOSTNAME=mariadb
+      - FINERACT_DEFAULT_TENANTDB_PORT=3306
+      - FINERACT_DEFAULT_TENANTDB_USER=root
+      - FINERACT_DEFAULT_TENANTDB_PWD=
+    depends_on:
+      mariadb:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "https://localhost:8443/fineract-provider/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 10
+
+  fineract-bff:
+    build: .
+    container_name: fineract-bff
+    ports:
+      - "8081:8081"
+    environment:
+      - FINERACT_API_URL=https://fineract-server:8443/fineract-provider/api/v1
+      - FINERACT_TENANT_ID=default
+      - SPRING_THREADS_VIRTUAL_ENABLED=true
+    depends_on:
+      fineract-server:
+        condition: service_healthy
