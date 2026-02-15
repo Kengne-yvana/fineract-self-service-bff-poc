@@ -1,0 +1,31 @@
+package org.apache.fineract.bff.service;
+
+import org.apache.fineract.bff.core.*;
+import org.springframework.stereotype.Service;
+import java.util.concurrent.CompletableFuture;
+
+@Service
+public class DashboardService {
+
+    private final FineractClient fineractClient;
+
+    public DashboardService(FineractClient fineractClient) {
+        this.fineractClient = fineractClient;
+    }
+
+    public CompletableFuture<DashboardDTO> getCustomerDashboard() {
+        return CompletableFuture.supplyAsync(fineractClient::getUserDetails)
+                .thenCompose(user -> {
+                    Long clientId = user.clientId();
+
+                    var clientFuture = CompletableFuture.supplyAsync(() -> fineractClient.getClient(clientId));
+                    var accountsFuture = CompletableFuture.supplyAsync(() -> fineractClient.getAccounts(clientId));
+
+                    return CompletableFuture.allOf(clientFuture, accountsFuture)
+                            .thenApply(v -> new DashboardDTO(
+                                    clientFuture.join(),
+                                    accountsFuture.join()
+                            ));
+                });
+    }
+}
