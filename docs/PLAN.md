@@ -1,4 +1,4 @@
-### FINERACT-2439 Self-Service API (BFF) POC Implementation Plan
+### FINERACT Self-Service API (BFF) POC Implementation Plan
 
 ### Summary
 This plan outlines the creation of a standalone Backend-for-Frontend (BFF) service for Apache Fineract. It aims to provide a simplified, secure, and high-performance API layer for consumer-facing applications (Mobile/Web), replacing the deprecated built-in self-service APIs with a modern architectural pattern.
@@ -81,7 +81,3 @@ A flattened structure optimized for mobile network conditions:
    * Docker: Multi-stage Dockerfile to build and run the Spring Boot app.
    * Compose: docker-compose.yml providing a one-click setup for the BFF + a mock Fineract container for local testing.
 
-### Open Questions
-
-   * Should the BFF implement a local H2 database for short-term caching of the clientId mapping?
-   * Which Fineract version (1.9.x or 2.0) should be the primary target for the POC environment?
