@@ -1,3 +1,4 @@
+backend-prototype/
 package org.apache.fineract.bff;
 
 import org.springframework.boot.SpringApplication;
